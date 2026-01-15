@@ -8,7 +8,6 @@ from .database import load_database, Database, SongIndex
 print("Loading database...")
 database, song_index = load_database()
 
-# nu mai am song_id aici deci ramane dictionar hash->ferestre pentru microfon
 MicHashes = Dict[int, List[int]]
 
 def create_hashes_mic(fingerprint: List[List[float]]) -> MicHashes:
@@ -39,59 +38,52 @@ def score_hashes_against_database_mic(
 ) -> List[Tuple[int, Tuple[int, int]]]:
     matches_per_song: Dict[int, List[Tuple[int, int, int]]] = {}
 
-    # pentru toate hashurile si timpii lor din microfon verific baza de date
     for h, mic_times in H_mic.items():
         if h not in database:
             continue
 
         matching_occurrences = database[
-            h]  # lista de (t_db, song_id)- se suprascrie la fiecare hash cu timpii si melodiile din baza de date coresp aceluiasi hash
+            h]
 
         for t_db, song_id in matching_occurrences:
             if song_id not in matches_per_song:
                 matches_per_song[song_id] = []
 
-            # fiecarei melodii ii pun hashul, fereastra din inreg microfon, fereastra din baza de date la care se gaseste
             for t_mic in mic_times:
                 matches_per_song[song_id].append((h, t_mic,
-                                                  t_db))  # pana aici o sa am un dictionar de song_id -> hashuri de la microfon si ferestrele ancora in care s au gasit(popt sa fie fi zgmotote totusi)
+                                                  t_db))
 
-    # offset, scorare
     scores: Dict[int, Tuple[int, int]] = {}
 
     for song_id, matches in matches_per_song.items():
-        song_scores_by_offset: Dict[int, int] = {}  # va avea offseturile si nr lor de aparitii
+        song_scores_by_offset: Dict[int, int] = {}
 
         for h, t_mic, t_db in matches:
-            delta = t_db - t_mic  # offset
+            delta = t_db - t_mic
             if delta not in song_scores_by_offset:
                 song_scores_by_offset[delta] = 0
             song_scores_by_offset[
-                delta] += 1  # daca melodia e corecta multe matchuri vor avea acelasi delta si multe nr de aparitii
+                delta] += 1
 
-        best = (0, 0)  # (offset, scor)
+        best = (0, 0)
         for offset, score in song_scores_by_offset.items():
-            if score > best[1]:  # caut cel mai mare nr de aparitii
+            if score > best[1]:
                 best = (offset, score)
 
         scores[
-            song_id] = best  # salvez cel mai mare nr pt song_id la care sunt ca dupa sa le compar pe toate melodiile intre ele
+            song_id] = best
 
-    # 3) sortez dupa best_score descrescator, deci primul element e cel cu cele mai multe aparitii de offset, deci melodia cautata
     sorted_scores = list(sorted(scores.items(), key=lambda x: x[1][1], reverse=True))
     return sorted_scores
 
 
 def score(hashes):
-    # ia output din create_hash.py si il converteste
 
     if not database:
         return None, 0
 
-    # Converteste {h: (t, id)} -> {h: [t]}, ex: 123:(50, None) -> 123:[50]
     H_mic_adapter = defaultdict(list)
     for h, val in hashes.items():
-        # if val is tuple (time, id) or just time
         if isinstance(val, (tuple, list)):
             t = val[0]
         else:
@@ -110,10 +102,9 @@ def score(hashes):
 
 def start_app(seconds: float = 10.0, Fs: int = 44100, min_score: int = 25) -> None:
     print("[PAS 1] Se incarca baza de date...")
-    # database, song_index = load_database() # l am pus la inceput
 
     print(f"[PAS 2] Se inregistreaza... ({seconds} sec)")
-    Fs_rec, audio = record_from_mic(seconds=seconds, Fs=Fs)  # (Fs, audio)
+    Fs_rec, audio = record_from_mic(seconds=seconds, Fs=Fs)
 
     print("[PAS 3] Fingerprint...")
     fp = create_fingerprint(audio, Fs_rec)

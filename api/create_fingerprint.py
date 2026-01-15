@@ -42,27 +42,3 @@ def create_fingerprint(audio_data, Fs):
                 fingerprint_map.append([time_idx, frequency])
 
     return fingerprint_map
-
-
-# file_path = "SOUNDS/song_test_full.wav"
-# if not os.path.exists(file_path):
-#     print(f"Error: File not found at {file_path}. Please check the path.")
-# else:
-#     try:
-#         Fs, audio = read(file_path)
-#     except Exception as e:
-#         print(f"Error reading file: {e}. Ensure the file is a valid, uncompressed WAV.")
-#         exit()
-#
-#     fingerprint_map = create_fingerprint(audio, Fs)
-#
-#
-#
-#     plt.scatter(*zip(*fingerprint_map), s=5, label='Ampli')
-#
-#     plt.title("Constellation Map")
-#     plt.xlabel("Time Bins (index)")
-#     plt.ylabel("Frequency (Hz)")
-#     plt.xlim((65, 100))
-#     plt.legend()
-#     plt.show()

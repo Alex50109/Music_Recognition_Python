@@ -16,7 +16,7 @@ def recognize_music(request):
 
     try:
         print("Starting recording...")
-        Fs, audio = record_from_mic(seconds=7.0)
+        Fs, audio = record_from_mic(seconds=12.0)
         print("Recording finished")
 
         fingerprints = create_fingerprint(audio, Fs)
