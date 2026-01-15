@@ -1,0 +1,52 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    background-color: #1e1e1e;
+    padding: 40px;
+    border-radius: 75px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    width: 300px;
+}
+
+.pulse-button {
+    background-color: #bb86fc;
+    color: black;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 20px 0;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.pulse-button:hover {
+    transform: scale(1.05);
+    background-color: #a370f7;
+}
+
+.pulse-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.hidden {
+    display: none;
+}
+
+#resultCard {
+    margin-top: 20px;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+}

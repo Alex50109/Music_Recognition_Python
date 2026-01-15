@@ -1,0 +1,75 @@
+{% load static %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Recognizer</title>
+    <link rel="stylesheet" href="{% static 'api/style.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎵 Music Search</h1>
+        <p>Click below to register a song for search.</p>
+
+        <button id="searchBtn" class="pulse-button">
+            🎤 Identify Song
+        </button>
+
+        <div id="statusMessage"></div>
+
+        <div id="resultCard" class="hidden">
+            <h2 id="songTitle">Song Title</h2>
+            <p id="artistName">Artist Name</p>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('searchBtn');
+        const status = document.getElementById('statusMessage');
+        const resultCard = document.getElementById('resultCard');
+
+        btn.addEventListener('click', async () => {
+            // 1. Update UI to show we are working
+            btn.disabled = true;
+            status.innerText = "Listening & Processing...";
+            resultCard.classList.add('hidden');
+
+            // 2. Prepare the data (Simulating mic input for now)
+            // In the future, your microphone teammate's code goes here!
+            const payload = {
+                audio_string: "test_audio_input_string"
+            };
+
+            try {
+                // 3. Send POST request to Django API
+                const response = await fetch('/api/recognize/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                // 4. Handle Response
+                if (response.ok) {
+                    status.innerText = "Match Found!";
+                    document.getElementById('songTitle').innerText = data.title;
+                    document.getElementById('artistName').innerText = data.artist;
+                    resultCard.classList.remove('hidden');
+                } else {
+                    status.innerText = "Error: " + (data.message || "Unknown error");
+                }
+
+            } catch (error) {
+                console.error(error);
+                status.innerText = "Failed to connect to server.";
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
